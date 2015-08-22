@@ -1,21 +1,19 @@
 #!/bin/bash
 
-echo "Hi~~~"
 
+USER=${USER:-user}
+PASS=${PASS:-user}
+echo "Your user info (user: ${USER}, password: ${PASS})"
+echo "${USER}  pptpd  ${PASS}  *" >>/etc/ppp/chap-secrets
 
-if [ ! -f /.root_passwd_set ]; then
-	/home/docker/code/set_root_pwd.sh
-fi
+DNS1 = ${DNS1:-8.8.8.8}
+DNS2 = ${DNS2:-4.4.4.4}
+echo "Using DNS setting DNS1 DNS2"
+sed -i "s/#ms-wins 10.0.0.3/ms-wins  ${DNS1}/g" /etc/ppp/pptpd-options
+sed -i "s/#ms-wins 10.0.0.4/ms-wins  ${DNS2}/g" /etc/ppp/pptpd-options
 
-MODULE=${MODULE:-website}
-echo "finding django project (module: ${MODULE})"
-sed -i "s#module=website.wsgi:application#module=${MODULE}.wsgi:application#g" /home/docker/code/uwsgi.ini
+iptables -t nat -A POSTROUTING -s 192.168.0.0/24 -o eth0 -j MASQUERADE
 
-if [ ! -f "/home/docker/code/app/manage.py" ]
-then
-	echo "creating basic django project (module: ${MODULE})"
-	django-admin.py startproject ${MODULE} /home/docker/code/app/
-fi
+service pptpd restart
 
-/usr/bin/supervisord
-exec /usr/sbin/sshd -D
+pptpd --fg

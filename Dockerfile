@@ -14,5 +14,5 @@ RUN chmod +x /home/pptp/*.sh
 
 EXPOSE 1723
 
-ENTRYPOINT ["/run.sh"]
+ENTRYPOINT ["/home/pptp/run.sh"]
 CMD ["pptpd", "--fg"]

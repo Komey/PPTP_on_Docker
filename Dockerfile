@@ -12,6 +12,7 @@ RUN sed -i "s/#localip 192.168.0.1/localip 192.168.0.1/g" /etc/pptpd.conf && sed
 
 RUN chmod +x /home/pptp/*.sh
 
-
 EXPOSE 1723
-CMD ["/home/pptp/run.sh"]
+
+ENTRYPOINT ["/run.sh"]
+CMD ["pptpd", "--fg"]
